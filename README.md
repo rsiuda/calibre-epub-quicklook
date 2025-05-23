@@ -1,93 +1,115 @@
-# Calibre EPUB QuickLook Extension
+# Calibre EPUB QuickLook
 
-A macOS QuickLook extension for EPUB files that integrates with Calibre's existing infrastructure.
+A macOS QuickLook extension for EPUB files that leverages Calibre's powerful EPUB rendering engine.
 
-## Overview
+## Status: 🚧 Implementation Ready for Xcode
 
-This project adds EPUB QuickLook support directly to Calibre by creating a Swift QuickLook Extension that communicates with Calibre's existing `quicklook_service()` backend.
+- ✅ Calibre's `quicklook_service()` verified working
+- ✅ Unix socket communication established  
+- ✅ Swift implementation complete
+- ⚠️ Requires manual Xcode project creation (macOS Sequoia uses app-based extensions)
 
-## Why Calibre Integration?
-
-1. **Proven Infrastructure**: Calibre already has `quicklook_service()` built specifically for this purpose
-2. **Community Welcome**: Kovid (Calibre founder) explicitly welcomes community contribution  
-3. **Better Solution**: Leverages Calibre's mature EPUB parsing and multi-format support
-4. **Long-term Maintenance**: Benefits from Calibre's established development team
-
-## Technical Architecture
-
-- **Backend**: Calibre's existing `quicklook_service()` (Unix socket + JSON)
-- **Frontend**: Swift QuickLook Extension using WKWebView
-- **Integration**: Add QuickLook Extension target to Calibre's build system
-- **Distribution**: Upstream contribution to Calibre repository
-
-## Implementation Plan
-
-1. **Research Phase**
-   - [ ] Fork Calibre repository
-   - [ ] Study `quicklook_service()` implementation in `calibre.srv.render_book`
-   - [ ] Understand Calibre's build system and contribution guidelines
-
-2. **Development Phase**
-   - [ ] Create Swift QuickLook Extension
-   - [ ] Implement Unix socket communication with Calibre backend
-   - [ ] Add WKWebView-based HTML rendering
-   - [ ] Integrate with Calibre's macOS build system
-
-3. **Integration Phase**
-   - [ ] Test with various EPUB formats
-   - [ ] Submit PR to upstream Calibre repository
-   - [ ] Work with Calibre team for integration
-
-## Key References
-
-- [Kovid's QuickLook statement](https://www.mobileread.com/forums//printthread.php?t=367393) - "I added a quicklook service to calibre for this exact purpose"
-- [Calibre QuickLook service commit](https://github.com/kovidgoyal/calibre/commit/d90d54528c1ad721c5a1c7f8b80919840a3e5f06)
-- [Calibre repository](https://github.com/kovidgoyal/calibre)
-
-## Current Status
-
-- ✅ Research complete - Calibre's `quicklook_service()` verified working
-- ✅ Unix socket communication tested successfully  
-- ✅ Test EPUB processing confirmed
-- 🚧 Swift QuickLook extension skeleton created
-- ⏳ Socket client implementation in Swift needed
-- ⏳ Xcode project setup pending
-
-## Development Setup
+## Creating the QuickLook Extension (macOS Sequoia)
 
 ### Prerequisites
-- macOS 10.15+
-- Calibre installed
-- Xcode for QuickLook extension development
+- macOS Sequoia (15.0+)
+- Xcode 16+
+- Calibre installed: `brew install --cask calibre`
 
-### Testing the Backend
+### Step 1: Create Xcode Project
+1. Open Xcode → File → New → Project
+2. Choose **macOS → App**
+3. Configure:
+   - Product Name: **CalibreQuickLook**
+   - Organization Identifier: **com.calibre**
+   - Language: **Swift**
+   - User Interface: **SwiftUI**
 
-1. Start Calibre's quicklook service:
-   ```bash
-   ./src/start_service.sh
-   ```
+### Step 2: Add Quick Look Extension
+1. File → New → Target
+2. Search and select **Quick Look Preview Extension**
+3. Configure:
+   - Product Name: **EPUBPreview**
+   - Language: **Swift**
+   - Embed in: **CalibreQuickLook**
 
-2. In another terminal, test with sample EPUB:
-   ```bash
-   ./src/test_client.py
-   ```
+### Step 3: Configure Extension
+1. Select EPUBPreview target → Info tab
+2. Under NSExtension → NSExtensionAttributes → QLSupportedContentTypes, add:
+   - `org.idpf.epub-container`
+   - `public.epub`
+   - `com.apple.ibooks.epub`
 
-The service will generate HTML previews in a temporary directory.
+### Step 4: Add Implementation
+1. Delete the default PreviewViewController.swift in EPUBPreview
+2. Add `src/QuickLookExtension/EPUBPreviewViewController.swift` to EPUBPreview target
+3. Ensure Target Membership is set to EPUBPreview only
+
+### Step 5: Disable Sandbox (for testing)
+1. Select EPUBPreview target → Build Settings
+2. Search "App Sandbox"
+3. Set Enable App Sandbox = NO
+
+### Step 6: Build and Test
+```bash
+# Start Calibre service
+./src/start_service.sh
+
+# Build in Xcode (Cmd+B)
+
+# Test QuickLook
+qlmanage -r
+qlmanage -p test-data/test_book.epub
+```
+
+## How It Works
+
+1. **QuickLook Extension** receives EPUB file path
+2. **Socket Client** connects to Calibre service at `/tmp/calibre-quicklook-socket`
+3. **Calibre Service** extracts and renders EPUB to HTML
+4. **WebView** displays the HTML preview
 
 ## Project Structure
 
 ```
-├── docs/
-│   ├── quicklook-service-api.md    # Complete API documentation
-│   └── research-notes.md           # Discovery process & references
 ├── src/
-│   ├── quicklook-extension/        # Swift QuickLook extension
+│   ├── QuickLookExtension/         # Swift implementation (all-in-one file)
+│   │   └── EPUBPreviewViewController.swift
 │   ├── test_client.py              # Python test client
-│   └── start_service.sh            # Service launcher
-└── test-data/
-    └── create_sample_epub.sh       # Generate test EPUBs
+│   └── start_service.sh            # Calibre service launcher
+├── test-data/
+│   └── test_book.epub              # Sample EPUB for testing
+└── docs/
+    └── quicklook-service-api.md    # API documentation
 ```
+
+## Troubleshooting
+
+### Service Not Running
+```bash
+# Check if service is running
+ps aux | grep calibre-debug | grep quicklook
+
+# Start service
+./src/start_service.sh
+```
+
+### QuickLook Not Working
+1. Check Console.app for errors
+2. Ensure no other EPUB QuickLook extensions are installed
+3. Reset QuickLook: `qlmanage -r`
+
+### Socket Connection Failed
+- Service must be running before testing
+- Check socket exists: `ls -la /tmp/calibre-quicklook-socket`
+
+## Future Improvements
+
+1. **Auto-start Service**: LaunchAgent to start service on demand
+2. **Caching**: Store rendered previews to improve performance
+3. **Sandbox Support**: Move socket to accessible location
+4. **Distribution**: Package as standalone app or Calibre integration
 
 ## Contributing
 
-This project aims to contribute EPUB QuickLook support upstream to Calibre. All development will be done with the goal of submitting a PR to the main Calibre repository.
+This project is a proof of concept for adding QuickLook support to Calibre. Contributions welcome!
