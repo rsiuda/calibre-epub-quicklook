@@ -1,0 +1,48 @@
+name: CalibreQuickLook
+options:
+  bundleIdPrefix: com.calibre
+  deploymentTarget:
+    macOS: "13.0"
+  createIntermediateGroups: true
+  
+targets:
+  CalibreQuickLook:
+    type: app-extension
+    platform: macOS
+    productName: CalibreQuickLook
+    bundleIdPrefix: com.calibre
+    deploymentTarget: "13.0"
+    sources:
+      - path: src/CalibreQuickLook
+        includes: 
+          - "*.swift"
+    info:
+      path: src/CalibreQuickLook/Info.plist
+      properties:
+        CFBundleDisplayName: Calibre EPUB QuickLook
+        CFBundleIdentifier: com.calibre.quicklook.epub
+        CFBundlePackageType: XPC!
+        CFBundleShortVersionString: "1.0"
+        CFBundleVersion: "1"
+        LSMinimumSystemVersion: "13.0"
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.quicklook.preview
+          NSExtensionPrincipalClass: PreviewViewController
+          QLSupportsConcurrentRequests: false
+          QLSupportsSearchableItems: true
+          QLSupportedContentTypes:
+            - org.idpf.epub-container
+            - org.idpf.epub-folder  
+            - public.epub
+            - com.apple.ibooks.epub
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.calibre.quicklook.epub
+      INFOPLIST_FILE: src/CalibreQuickLook/Info.plist
+      CODE_SIGN_STYLE: Automatic
+      ENABLE_HARDENED_RUNTIME: NO
+      ENABLE_APP_SANDBOX: NO
+      MACOSX_DEPLOYMENT_TARGET: "13.0"
+      SWIFT_VERSION: "5.0"
+      PRODUCT_NAME: CalibreQuickLook
+      WRAPPER_EXTENSION: qlgenerator
+      GENERATE_INFOPLIST_FILE: NO

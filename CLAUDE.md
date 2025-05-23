@@ -46,4 +46,4 @@ Creating a macOS QuickLook extension for EPUB files that integrates with Calibre
 - `/docs/quicklook-service-api.md` - Complete API documentation
 
 ### Memories
-- to memorize
+- Always use descriptive variable names. Comment the code.
