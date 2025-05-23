@@ -1,0 +1,25 @@
+# Calibre development
+*.pyc
+__pycache__/
+.python-version
+venv/
+.venv/
+
+# Xcode
+*.xcuserstate
+*.xcuserdatad/
+DerivedData/
+.swiftpm/
+
+# Test files
+test-data/sample/
+test-data/*.epub
+
+# macOS
+.DS_Store
+*.swp
+*.swo
+
+# Build artifacts
+build/
+dist/
