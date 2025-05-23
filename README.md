@@ -44,9 +44,49 @@ This project adds EPUB QuickLook support directly to Calibre by creating a Swift
 - [Calibre QuickLook service commit](https://github.com/kovidgoyal/calibre/commit/d90d54528c1ad721c5a1c7f8b80919840a3e5f06)
 - [Calibre repository](https://github.com/kovidgoyal/calibre)
 
+## Current Status
+
+- ✅ Research complete - Calibre's `quicklook_service()` verified working
+- ✅ Unix socket communication tested successfully  
+- ✅ Test EPUB processing confirmed
+- 🚧 Swift QuickLook extension skeleton created
+- ⏳ Socket client implementation in Swift needed
+- ⏳ Xcode project setup pending
+
 ## Development Setup
 
-*Coming soon - after initial research phase*
+### Prerequisites
+- macOS 10.15+
+- Calibre installed
+- Xcode for QuickLook extension development
+
+### Testing the Backend
+
+1. Start Calibre's quicklook service:
+   ```bash
+   ./src/start_service.sh
+   ```
+
+2. In another terminal, test with sample EPUB:
+   ```bash
+   ./src/test_client.py
+   ```
+
+The service will generate HTML previews in a temporary directory.
+
+## Project Structure
+
+```
+├── docs/
+│   ├── quicklook-service-api.md    # Complete API documentation
+│   └── research-notes.md           # Discovery process & references
+├── src/
+│   ├── quicklook-extension/        # Swift QuickLook extension
+│   ├── test_client.py              # Python test client
+│   └── start_service.sh            # Service launcher
+└── test-data/
+    └── create_sample_epub.sh       # Generate test EPUBs
+```
 
 ## Contributing
 

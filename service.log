@@ -1,0 +1,41 @@
+Starting Calibre quicklook service...
+Socket path: /tmp/calibre-quicklook-socket
+Press Ctrl+C to stop
+
+DeDRM v10.0.9: Trying to decrypt test_book.epub
+DeDRM v10.0.9: Verifying zip archive integrity
+DeDRM v10.0.9: Post-processing took 0.0 seconds
+DeDRM v10.0.9: Finished after 0.1 seconds
+InputFormatPlugin: EPUB Input running
+on /var/folders/pf/_br4xy_575s90c6x8tmy7_2w0000gn/C/calibre-n_iso0wa/1qx5wnya.epub
+Traceback (most recent call last):
+  File "calibre/srv/render_book.py", line 893, in handle_quicklook_client
+  File "socket.py", line 736, in write
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "socket.py", line 736, in write
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "calibre/srv/render_book.py", line 940, in quicklook_service
+  File "calibre/srv/render_book.py", line 891, in handle_quicklook_client
+  File "socket.py", line 736, in write
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "runpy.py", line 198, in _run_module_as_main
+  File "runpy.py", line 88, in _run_code
+  File "site.py", line 42, in <module>
+  File "site.py", line 38, in main
+  File "calibre/debug.py", line 242, in main
+  File "<string>", line 1, in <module>
+  File "calibre/srv/render_book.py", line 942, in quicklook_service
+OSError: [Errno 57] Socket is not connected
+./src/start_service.sh: line 9: 24967 Terminated: 15          calibre-debug -c "from calibre.srv.render_book import *; quicklook_service('/tmp/calibre-quicklook-socket')"

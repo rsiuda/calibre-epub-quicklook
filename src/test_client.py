@@ -25,14 +25,14 @@ def test_quicklook_service():
         }
         sock.send((json.dumps(request) + '\n').encode('utf-8'))
         
-        # Read response
+        # Read response - wait for complete line
         response = b''
         while True:
             data = sock.recv(4096)
-            if not data:
-                break
             response += data
             if b'\n' in response:
+                break
+            if not data:
                 break
         
         result = json.loads(response.decode('utf-8').strip())
@@ -40,9 +40,18 @@ def test_quicklook_service():
         
         # List generated files
         print(f"\nGenerated files:")
-        for root, dirs, files in os.walk(output_dir):
+        for root, _, files in os.walk(output_dir):
             for file in files:
-                print(f"  {os.path.join(root, file)}")
+                filepath = os.path.join(root, file)
+                print(f"  {filepath}")
+                
+        # Check if we got HTML content
+        if 'spine' in result and result['spine']:
+            first_html = os.path.join(output_dir, result['spine'][0])
+            if os.path.exists(first_html):
+                print(f"\nFirst HTML preview: {first_html}")
+                with open(first_html, 'r', encoding='utf-8') as f:
+                    print(f"Size: {len(f.read())} bytes")
         
     finally:
         sock.close()
